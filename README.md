@@ -14,9 +14,10 @@ By replacing traditional static datasheet pass/fail thresholds (e.g., $I_{\text{
 
 ## 1. Problem Statement
 
-Electronic components undergo burn-in stress screening to accelerate early-life failure mechanisms. Traditional screening relies on static upper/lower limits. 
+Electronic components undergo burn-in stress screening to accelerate early-life failure mechanisms. Traditional screening relies on static upper/lower limits.
 
 **The Challenge:**
+
 * A component with a leakage current of $45\,\mu\text{A}$ passes a static $50\,\mu\text{A}$ datasheet limit.
 * However, if the manufacturing lot average is $10\,\mu\text{A}$ with a standard deviation ($\sigma$) of $1.2\,\mu\text{A}$, then $45\,\mu\text{A}$ ($+29.1\,\sigma$) represents an **abnormal out-of-family unit** containing latent defects.
 * Early parameter degradation between 0h and 24h often predicts catastrophic failure at 168 hours.
@@ -59,23 +60,23 @@ Anomaly Detector   (RandomForest / XGBoost)
 
 ## 3. Key Features
 
-- **Synthetic Burn-In Data Generator:** Generates multi-lot semiconductor screening logs with normal thermal stabilization, slow drifters, rapid degradation, and baseline anomalies.
-- **Dynamic Anomaly Detection:** Compares Isolation Forest against Local Outlier Factor (LOF) and One-Class SVM.
-- **168h Failure Forecast:** Regression models (Linear, Random Forest, Gradient Boosting) predicting future degradation values using early 0h–24h telemetry.
-- **Hybrid Risk Score (0–100):** Configurable weighted engine classifying units into `SAFE` (0–30), `MONITOR` (31–60), and `HIGH_RISK` (61–100).
-- **Explainable AI (XAI):** SHAP feature contribution charts + human-readable diagnostic reasons for quality assurance engineers.
-- **FastAPI REST Backend:** OpenAPI specification, PostgreSQL persistence, real-time single component prediction endpoint.
-- **Modern Dark UI Dashboard:** Interactive React 19 + TypeScript + Recharts + Tailwind CSS frontend with search, lot filtering, line graph forecasts, and realtime inference sandbox.
+* **Synthetic Burn-In Data Generator:** Generates multi-lot semiconductor screening logs with normal thermal stabilization, slow drifters, rapid degradation, and baseline anomalies.
+* **Dynamic Anomaly Detection:** Compares Isolation Forest against Local Outlier Factor (LOF) and One-Class SVM.
+* **168h Failure Forecast:** Regression models (Linear, Random Forest, Gradient Boosting) predicting future degradation values using early 0h–24h telemetry.
+* **Hybrid Risk Score (0–100):** Configurable weighted engine classifying units into `SAFE` (0–30), `MONITOR` (31–60), and `HIGH_RISK` (61–100).
+* **Explainable AI (XAI):** SHAP feature contribution charts + human-readable diagnostic reasons for quality assurance engineers.
+* **FastAPI REST Backend:** OpenAPI specification, PostgreSQL persistence, real-time single component prediction endpoint.
+* **Modern Command Center UI:** Interactive React 19 + TypeScript + Recharts + Tailwind CSS frontend with light/dark/system theme modes, parameter drift scatter space, signal timelines, and realtime inference sandbox.
 
 ---
 
 ## 4. Technology Stack
 
-- **ML / Data Science:** Python 3.11+, Scikit-Learn, Pandas, NumPy, Joblib, SHAP
-- **Backend:** FastAPI, Pydantic v2, SQLAlchemy, Uvicorn
-- **Database:** PostgreSQL 15 (Docker) / SQLite (Local Fallback)
-- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v4, Recharts, Lucide Icons
-- **DevOps & Testing:** Docker, Docker Compose, Pytest, Nginx
+* **ML / Data Science:** Python 3.11+, Scikit-Learn, Pandas, NumPy, Joblib, SHAP
+* **Backend:** FastAPI, Pydantic v2, SQLAlchemy, Uvicorn
+* **Database:** PostgreSQL 15 / SQLite
+* **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v4, Recharts, Lucide Icons
+* **Deployment:** Vercel (Unified React + FastAPI Serverless), Docker, Docker Compose
 
 ---
 
@@ -84,48 +85,95 @@ Anomaly Detector   (RandomForest / XGBoost)
 ### Option A: Quick Local Run (Python + Node.js)
 
 1. **Clone repository:**
+
    ```bash
    git clone https://github.com/your-org/burnguard-ai.git
    cd burnguard-ai
    ```
 
 2. **Backend Setup:**
+
    ```bash
    # Install dependencies
-   pip install -r backend/requirements.txt
+   pip install -r requirements.txt
 
-   # Generate demo dataset
-   python scripts/generate_dataset.py
-
-   # Train ML models
-   $env:PYTHONPATH="."; python scripts/train_models.py
-
-   # Start FastAPI Server
-   $env:PYTHONPATH="."; uvicorn backend.app.main:app --reload --port 8000
+   # Start FastAPI Backend Server
+   python -m uvicorn backend.app.main:app --reload --port 8000
    ```
 
 3. **Frontend Setup:**
+
    ```bash
    cd frontend
    npm install
    npm run dev
    ```
+
    Open `http://localhost:5173` in your browser.
 
 ---
 
-### Option B: Production Docker Compose Setup
+### Option B: Deploying BurnGuard AI on Vercel
 
-Run the entire full-stack application (PostgreSQL + FastAPI + Nginx React Frontend):
+The application is fully configured to deploy both the **React/Vite frontend** and **FastAPI Python backend** as a single Vercel project.
+
+#### Deployment Steps
+
+1. **Push Project to GitHub:**
+
+   ```bash
+   git add .
+   git commit -m "Configure BurnGuard AI for Vercel deployment"
+   git push origin main
+   ```
+
+2. **Import Repository into Vercel:**
+   * Go to [Vercel Dashboard](https://vercel.com/dashboard) → **Add New...** → **Project**.
+   * Select your `BurnGuard-AI` GitHub repository.
+
+3. **Project Settings Configuration:**
+   * **Framework Preset:** `Vite` (or `Other`).
+   * **Root Directory:** `./` (Leave default as root).
+   * **Build & Development Settings:** Vercel automatically uses `vercel.json` to handle Python serverless API build (`@vercel/python`) and Vite static site build (`@vercel/static-build`).
+
+4. **Environment Variables:**
+   Add the following environment variables in the Vercel Dashboard (**Settings** → **Environment Variables**):
+   * `VITE_API_URL` = `/api`
+   * `DATABASE_URL` = `postgresql://user:password@your-postgres-host:5432/burnguard_db` *(Optional: If omitted, automatically uses SQLite `/tmp/burnguard.db` fallback)*
+
+5. **Deploy & Test:**
+   * Click **Deploy**.
+   * Once build completes, test health endpoint: `https://YOUR-VERCEL-DOMAIN.vercel.app/api/health`.
+   * Verify response:
+
+     ```json
+     {
+       "status": "healthy",
+       "project": "BurnGuard AI",
+       "version": "1.0.0"
+     }
+     ```
+
+   * Access frontend dashboard at `https://YOUR-VERCEL-DOMAIN.vercel.app`.
+
+6. **Continuous Deployment:**
+   * Any future commits pushed to `main` branch will automatically trigger automated production builds on Vercel.
+
+---
+
+### Option C: Production Docker Compose Setup
+
+Run the full application using Docker Compose:
 
 ```bash
 docker compose up --build
 ```
 
 Access Points:
-- **Frontend Dashboard:** `http://localhost:3000`
-- **FastAPI Documentation:** `http://localhost:8000/docs`
-- **Health Check:** `http://localhost:8000/health`
+
+* **Frontend Dashboard:** `http://localhost:3000`
+* **FastAPI Documentation:** `http://localhost:8000/docs`
+* **Health Check:** `http://localhost:8000/health`
 
 ---
 
@@ -133,7 +181,7 @@ Access Points:
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/health` | Application health check |
+| `GET` | `/api/health` | Application health check |
 | `POST` | `/api/data/upload` | Upload CSV measurement logs |
 | `POST` | `/api/data/generate-demo` | Generate synthetic demo dataset |
 | `GET` | `/api/dashboard/summary` | Executive KPI summary statistics |
@@ -155,27 +203,14 @@ $$R = 0.40 \cdot S_{\text{anomaly}} + 0.25 \cdot S_{\text{drift}} + 0.25 \cdot S
 * **$S_{\text{pred}}$ (25%):** Ratio of predicted 168h value vs. initial baseline.
 * **$S_{\text{lot}}$ (10%):** Statistical Z-Score deviation from manufacturing lot mean.
 
-**Risk Classification:**
-- `SAFE` (0 – 30 pts): Component within normal lot distribution.
-- `MONITOR` (31 – 60 pts): Mild parameter drift; marked for re-testing.
-- `HIGH_RISK` (61 – 100 pts): Statistically abnormal or rapidly degrading; quarantined.
-
 ---
 
-## 8. Running Automated Tests
-
-Run the Pytest suite to verify feature engineering, risk score boundaries, prediction API, and database operations:
-
-```bash
-$env:PYTHONPATH="."; python -m pytest
-```
-
----
-
-## 9. Project Structure
+## 8. Project Structure
 
 ```text
-burnguard-ai/
+BurnGuard-AI/
+├── api/
+│   └── index.py             # Vercel FastAPI Serverless Entrypoint
 ├── backend/
 │   ├── app/
 │   │   ├── api/             # FastAPI route handlers
@@ -186,25 +221,22 @@ burnguard-ai/
 │   │   ├── services/        # Business logic & prediction manager
 │   │   ├── config.py        # Settings configuration
 │   │   └── main.py          # FastAPI application entrypoint
-│   ├── Dockerfile
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── components/      # Navbar, KPICard, RiskBadge, DetailModal
+│   │   ├── components/      # Navbar, KPICard, RiskBadge, DetailModal, HealthGauge, ScatterPlot
 │   │   ├── pages/           # Dashboard, Telemetry Explorer, Sandbox, Upload, Analytics
 │   │   ├── services/        # Axios API client
 │   │   ├── types/           # TypeScript interfaces
 │   │   ├── App.tsx
-│   │   └── index.css        # Tailwind v4 glassmorphism styles
-│   ├── Dockerfile
-│   └── package.json
+│   │   └── index.css        # Glassmorphism & PCB theme styles
+│   ├── package.json
+│   └── vite.config.ts       # Vite configuration & dev proxy
 ├── data/
 │   └── raw/                 # Generated/Uploaded CSV datasets
 ├── models/                  # Saved .joblib model artifacts & metrics.json
-├── scripts/
-│   ├── generate_dataset.py  # Synthetic data generator
-│   └── train_models.py      # ML training & model selection script
-├── tests/                   # Pytest test suite
+├── requirements.txt         # Root Python requirements for Vercel
+├── vercel.json              # Vercel unified frontend + serverless build routing
 ├── docker-compose.yml
 ├── .env.example
 ├── .gitignore
@@ -213,6 +245,6 @@ burnguard-ai/
 
 ---
 
-## 10. License
+## 9. License
 
 This project is licensed under the MIT License.

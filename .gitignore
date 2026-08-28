@@ -30,8 +30,9 @@ node_modules/
 frontend/node_modules/
 frontend/dist/
 
-# Model & Local Data Artifacts (generated)
-models/*.joblib
+# Model & Local Data Artifacts
+# Note: models/*.joblib are tracked so pre-trained models deploy directly to Vercel
+# models/*.joblib
 data/processed/
 
 # Environment & IDE
