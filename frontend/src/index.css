@@ -1,0 +1,162 @@
+@import "tailwindcss";
+
+:root {
+  /* Default Dark Mode Theme Tokens */
+  --bg-primary: #070b12;
+  --bg-secondary: #0d1320;
+  --bg-card: rgba(14, 21, 37, 0.85);
+  --bg-card-solid: #0e1525;
+  --bg-card-hover: rgba(22, 32, 54, 0.95);
+  --bg-input: #090e18;
+  --bg-header: rgba(7, 11, 18, 0.85);
+  
+  --border-primary: rgba(45, 60, 88, 0.5);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-accent: rgba(6, 182, 212, 0.3);
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --cyan-accent: #06b6d4;
+  --emerald-safe: #10b981;
+  --amber-monitor: #f59e0b;
+  --rose-danger: #ef4444;
+  --purple-xai: #8b5cf6;
+  
+  --glow-cyan: rgba(6, 182, 212, 0.18);
+  --glow-emerald: rgba(16, 185, 129, 0.18);
+  --glow-rose: rgba(239, 68, 68, 0.2);
+  --glow-purple: rgba(139, 92, 246, 0.18);
+  
+  --pattern-color: rgba(6, 182, 212, 0.035);
+  --chart-grid: rgba(255, 255, 255, 0.06);
+  --chart-tooltip-bg: #0e1525;
+  --chart-tooltip-border: #1e293b;
+}
+
+html.light {
+  /* Light Mode Theme Tokens */
+  --bg-primary: #f4f6fb;
+  --bg-secondary: #e6ebf5;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card-solid: #ffffff;
+  --bg-card-hover: #ffffff;
+  --bg-input: #f8fafc;
+  --bg-header: rgba(255, 255, 255, 0.88);
+  
+  --border-primary: #d1d5db;
+  --border-subtle: #e5e7eb;
+  --border-accent: rgba(8, 145, 178, 0.4);
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  
+  --cyan-accent: #0891b2;
+  --emerald-safe: #059669;
+  --amber-monitor: #d97706;
+  --rose-danger: #dc2626;
+  --purple-xai: #7c3aed;
+  
+  --glow-cyan: rgba(8, 145, 178, 0.12);
+  --glow-emerald: rgba(5, 150, 105, 0.12);
+  --glow-rose: rgba(220, 38, 38, 0.12);
+  --glow-purple: rgba(124, 58, 237, 0.12);
+  
+  --pattern-color: rgba(15, 23, 42, 0.03);
+  --chart-grid: #e2e8f0;
+  --chart-tooltip-bg: #ffffff;
+  --chart-tooltip-border: #cbd5e1;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-x: hidden;
+}
+
+/* PCB Circuit Pattern Overlay */
+.pcb-background {
+  background-image: 
+    radial-gradient(circle at 10px 10px, var(--pattern-color) 1.5px, transparent 0),
+    linear-gradient(to right, var(--pattern-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--pattern-color) 1px, transparent 1px);
+  background-size: 24px 24px, 48px 48px, 48px 48px;
+}
+
+/* Engineering Card Styling */
+.eng-card {
+  background-color: var(--bg-card);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-primary);
+  border-radius: 1rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.eng-card-hover:hover {
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -10px var(--glow-cyan);
+}
+
+/* Status Glow Indicators */
+.glow-safe {
+  box-shadow: 0 0 16px var(--glow-emerald);
+}
+.glow-danger {
+  box-shadow: 0 0 16px var(--glow-rose);
+}
+.glow-cyan {
+  box-shadow: 0 0 16px var(--glow-cyan);
+}
+
+/* Custom Electronic Signal Animations */
+@keyframes pulse-signal {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.1);
+  }
+}
+
+.animate-pulse-signal {
+  animation: pulse-signal 2s infinite ease-in-out;
+}
+
+@keyframes data-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-data-flow {
+  background-size: 200% 200%;
+  animation: data-flow 3s linear infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-primary);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}

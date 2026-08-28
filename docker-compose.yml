@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: burnguard_db
+    restart: always
+    environment:
+      POSTGRES_USER: burnguard
+      POSTGRES_PASSWORD: burnguard123
+      POSTGRES_DB: burnguard_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U burnguard -d burnguard_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: burnguard_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://burnguard:burnguard123@db:5432/burnguard_db
+      - MODEL_DIR=models
+      - DATA_RAW_DIR=data/raw
+      - ANOMALY_WEIGHT=0.40
+      - EARLY_DRIFT_WEIGHT=0.25
+      - PREDICTED_RISK_WEIGHT=0.25
+      - LOT_DEVIATION_WEIGHT=0.10
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: burnguard_frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

@@ -1,0 +1,59 @@
+{
+  "anomaly_report": {
+    "dataset_size": 2500,
+    "contamination_target": 0.08,
+    "models": {
+      "IsolationForest": {
+        "anomalies_detected": 200,
+        "anomaly_rate": 0.08,
+        "mean_anomaly_score": 0.21399908046172558,
+        "is_selected_production": true
+      },
+      "LocalOutlierFactor": {
+        "anomalies_detected": 172,
+        "anomaly_rate": 0.0688,
+        "mean_anomaly_score": 0.08314579433194486,
+        "is_selected_production": false
+      },
+      "OneClassSVM": {
+        "anomalies_detected": 199,
+        "anomaly_rate": 0.0796,
+        "mean_anomaly_score": 0.13596578365934353,
+        "is_selected_production": false
+      }
+    }
+  },
+  "drift_report": {
+    "selected_model": "RandomForestRegressor",
+    "best_metrics": {
+      "mae": 4.8412,
+      "rmse": 9.6035,
+      "r2": 0.9115
+    },
+    "all_models_comparison": {
+      "LinearRegression": {
+        "mae": 7.8552,
+        "rmse": 13.0566,
+        "r2": 0.8364
+      },
+      "RandomForestRegressor": {
+        "mae": 4.8412,
+        "rmse": 9.6035,
+        "r2": 0.9115
+      },
+      "GradientBoostingRegressor": {
+        "mae": 4.8965,
+        "rmse": 9.7699,
+        "r2": 0.9084
+      }
+    },
+    "train_samples": 2000,
+    "test_samples": 500
+  },
+  "selected_drift_model": "RandomForestRegressor",
+  "mae": 4.8412,
+  "rmse": 9.6035,
+  "r2": 0.9115,
+  "training_date": "2026-08-27T21:37:48.848684",
+  "model_version": "1.0.0"
+}
